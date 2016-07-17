@@ -3,6 +3,7 @@ package com.htyleo.extsort;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,7 +14,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -26,9 +26,16 @@ import com.htyleo.extsort.util.IOUtil;
 /**
  * <p>
  * An implementation of external sorting.
- * The basic idea is that we logically separate the file into smaller slices and sort each slice in memory.
+ * The sorting is composed of two phases:
+ * <ul>
+ *     <li>Partition: partition the source file into a bunch of sorted files.</li>
+ *     <li>Merge: merge the sorted files into a single file.</li>
+ * </ul>
+ *
+ * The basic idea is that we logically partition the file into smaller slices, 
+ * each of which is sorted in memory and then written to a separate file.
  * Because sorting slices in memory is performed concurrently (i.e. each slice is sorted in a separate thread),
- * the maximum memory that will be used = max size of thread pool * (slice size + buffer size).
+ * the maximum memory used = max size of thread pool * (slice size + buffer size).
  * </p>
  *
  * <p>
@@ -46,7 +53,25 @@ import com.htyleo.extsort.util.IOUtil;
 public class ExternalSort {
 
     /**
-     * Perform external sorting.
+     * Perform external sorting
+     * 
+     * @param sourceFile input file
+     * @param dstDir output directory
+     * @param config sorting configuration
+     * @return output file
+     * @throws Exception If an exception error occurs
+     */
+    public static File sort(File sourceFile, File dstDir, ExternalSortConfig config)
+                                                                                    throws Exception {
+        PartitionResult partitionResult = partition(sourceFile, dstDir, config);
+        File dstFile = new File(dstDir, sourceFile.getName());
+        merge(dstFile, partitionResult, config);
+
+        return dstFile;
+    }
+
+    /**
+     * External sorting phase One: Partition
      * The input is the source file and the output is a bunch of sorted files.
      * Note that the file header and tail will each be stored in a separate file.
      *
@@ -54,14 +79,10 @@ public class ExternalSort {
      * @param dstDir output directory
      * @param config sorting configuration
      * @return sorting result
-     * @throws IOException If an I/O error occurs
-     * @throws InterruptedException
-     * @throws ExecutionException
+     * @throws Exception If an exception error occurs
      */
-    public static ExternalSortResult sort(final File sourceFile, final File dstDir,
-                                          final ExternalSortConfig config) throws IOException,
-                                                                          InterruptedException,
-                                                                          ExecutionException {
+    public static PartitionResult partition(final File sourceFile, final File dstDir,
+                                            final ExternalSortConfig config) throws Exception {
         List<FileSlice> slices = slice(sourceFile, config.getHeaderLines(),
             config.getIgnoreHeaderBlankLines(), config.getTailLines(),
             config.getIgnoreTailBlankLines(), config.getSliceSize());
@@ -72,7 +93,7 @@ public class ExternalSort {
             futures.add(executor.submit(new Callable<File>() {
                 @Override
                 public File call() throws Exception {
-                    return processSlice(sourceFile, dstDir, config, slice);
+                    return writeSlice(sourceFile, dstDir, config, slice);
                 }
             }));
         }
@@ -95,7 +116,67 @@ public class ExternalSort {
             }
         }
 
-        return new ExternalSortResult(header, bodies, tail);
+        return new PartitionResult(header, bodies, tail);
+    }
+
+    /**
+     * External sorting phase One: Merge
+     *
+     * @param dstFile output file
+     * @param result partition result
+     * @param config sorting configuration
+     * @throws IOException If an I/O error occurs
+     */
+    public static void merge(File dstFile, PartitionResult result, ExternalSortConfig config)
+                                                                                             throws IOException {
+        String encoding = config.getEncoding();
+        int bufferSize = config.getBufferSize();
+        Comparator<String> lineComparator = config.getLineComparator();
+
+        BufferedWriter writer = null;
+        BufferedReader reader = null;
+        GroupSortedFileReader groupReader = null;
+        try {
+            String line;
+            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(dstFile),
+                encoding), bufferSize);
+
+            // write header
+            File header = result.getHeader();
+            if (header != null && header.isFile()) {
+                reader = new BufferedReader(new InputStreamReader(new FileInputStream(header),
+                    encoding), bufferSize);
+                while ((line = reader.readLine()) != null) {
+                    writer.write(line);
+                    writer.newLine();
+                }
+            }
+
+            // merge bodies
+            groupReader = new GroupSortedFileReader(result.getBodies(), lineComparator, encoding,
+                bufferSize);
+            while ((line = groupReader.readLine()) != null) {
+                writer.write(line);
+                writer.newLine();
+            }
+
+            // write tail
+            File tail = result.getTail();
+            if (tail != null && tail.isFile()) {
+                reader = new BufferedReader(new InputStreamReader(new FileInputStream(tail),
+                    encoding), bufferSize);
+                while ((line = reader.readLine()) != null) {
+                    writer.write(line);
+                    writer.newLine();
+                }
+            }
+
+        } finally {
+            IOUtil.closeQuietly(writer);
+            IOUtil.closeQuietly(reader);
+            IOUtil.closeQuietly(groupReader);
+        }
+
     }
 
     /**
@@ -200,7 +281,7 @@ public class ExternalSort {
     }
 
     /**
-     * Process a slice, i.e., read the portion of the original file and write to disk
+     * Write a slice to file
      * 
      * @param sourceFile original file
      * @param dstDir the directory where the file will be written
@@ -209,8 +290,8 @@ public class ExternalSort {
      * @return the written file
      * @throws IOException If an I/O error occurs
      */
-    private static File processSlice(File sourceFile, File dstDir, ExternalSortConfig config,
-                                     FileSlice slice) throws IOException {
+    private static File writeSlice(File sourceFile, File dstDir, ExternalSortConfig config,
+                                   FileSlice slice) throws IOException {
 
         String encoding = config.getEncoding();
         int bufferSize = config.getBufferSize();

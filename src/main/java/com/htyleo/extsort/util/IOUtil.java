@@ -5,6 +5,8 @@ import java.io.RandomAccessFile;
 import java.io.Reader;
 import java.io.Writer;
 
+import com.htyleo.extsort.GroupSortedFileReader;
+
 /**
  * IO util
  *
@@ -215,6 +217,20 @@ public class IOUtil {
             }
         } catch (IOException ioe) {
             // ignore
+        }
+    }
+
+    /**
+     * Unconditionally close a <code>GroupSortedFileReader</code>.
+     * <p>
+     * Equivalent to {@link GroupSortedFileReader#close()}, except any exceptions will be ignored.
+     * This is typically used in finally blocks.
+     *
+     * @param groupReader  the GroupSortedFileReader to close, may be null or already closed
+     */
+    public static void closeQuietly(GroupSortedFileReader groupReader) {
+        if (groupReader != null) {
+            groupReader.close();
         }
     }
 

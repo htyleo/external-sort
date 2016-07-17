@@ -36,7 +36,7 @@ public class ExternalSortTest {
     }
 
     @Test
-    public void testExternalSort() {
+    public void testSort() {
         Random rand = new Random();
 
         int headerSize = 10;
@@ -63,28 +63,26 @@ public class ExternalSortTest {
             FileUtils.writeLines(sourceFile, "UTF-8", lines);
 
             ExternalSortConfig config = new ExternalSortConfig();
+            config.setEncoding("UTF-8");
             config.setHeaderLines(10);
+            config.setIgnoreHeaderBlankLines(false);
             config.setTailLines(5);
+            config.setIgnoreTailBlankLines(false);
             config.setSliceSize(512);
-            ExternalSortResult result = ExternalSort.sort(sourceFile, dstDir, config);
 
-            File headerFile = result.getHeader();
-            List<String> headerLines2 = FileUtils.readLines(headerFile);
-            Assert.assertEquals(headerLines, headerLines2);
+            File dstFile = ExternalSort.sort(sourceFile, dstDir, config);
+            List<String> dstLines = FileUtils.readLines(dstFile);
+            List<String> headLines2 = dstLines.subList(0, config.getHeaderLines());
+            Assert.assertEquals(headerLines, headLines2);
 
-            File tailFile = result.getTail();
-            List<String> tailLines2 = FileUtils.readLines(tailFile);
-            Assert.assertEquals(tailLines, tailLines2);
-
-            List<File> bodyFiles = result.getBodies();
-            GroupSortedFileReader groupReader = new GroupSortedFileReader(bodyFiles,
-                config.getLineComparator(), "UTF-8");
-            List<String> bodyLines2 = new ArrayList<String>();
-            for (String line; (line = groupReader.readLine()) != null;) {
-                bodyLines2.add(line);
-            }
             Collections.sort(bodyLines, config.getLineComparator());
+            List<String> bodyLines2 = dstLines.subList(config.getHeaderLines(),
+                dstLines.size() - config.getTailLines());
             Assert.assertEquals(bodyLines, bodyLines2);
+
+            List<String> tailLines2 = dstLines.subList(dstLines.size() - config.getTailLines(),
+                dstLines.size());
+            Assert.assertEquals(tailLines, tailLines2);
 
         } catch (Exception e) {
             Assert.fail(e.getMessage());

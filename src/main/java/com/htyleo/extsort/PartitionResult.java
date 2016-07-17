@@ -4,11 +4,11 @@ import java.io.File;
 import java.util.List;
 
 /**
- * Result of external sorting
+ * Result of the partition phase of external sorting
  * 
  * @author htyleo
  */
-public class ExternalSortResult {
+public class PartitionResult {
 
     /** header file */
     private File       header;
@@ -20,13 +20,13 @@ public class ExternalSortResult {
     private File       tail;
 
     /**
-     * Create an ExternalSortResult
+     * Create an PartitionResult
      *
      * @param header file that contains the header of the original file
      * @param bodies files that contain the body of the original file
      * @param tail file that contains the tail of the original file
      */
-    public ExternalSortResult(File header, List<File> bodies, File tail) {
+    public PartitionResult(File header, List<File> bodies, File tail) {
         this.header = header;
         this.bodies = bodies;
         this.tail = tail;
