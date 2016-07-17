@@ -1,0 +1,16 @@
+# Eclipse
+**/bin/
+**/build/
+**/.settings/
+**/.project
+**/.classpath
+**/.springBeans
+
+# IntelliJ IDEA
+**/.idea/
+**/out/
+**/*.iml
+
+# Maven
+**/target
+/target/
