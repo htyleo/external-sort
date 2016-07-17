@@ -24,22 +24,39 @@ import com.htyleo.extsort.common.SliceType;
 import com.htyleo.extsort.util.IOUtil;
 
 /**
- * External sorting algorithm
- * 
+ * <p>
+ * An implementation of external sorting.
+ * The basic idea is that we logically separate the file into smaller slices and sort each slice in memory.
+ * Because sorting slices in memory is performed concurrently (i.e. each slice is sorted in a separate thread),
+ * the maximum memory that will be used = max size of thread pool * (slice size + buffer size).
+ * </p>
+ *
+ * <p>
+ * This implementation has the following features:
+ * <ul>
+ *     <li>Every line will be included in some slice in its entirely. In other words, a line will not be sliced in between. </li>
+ *     <li>The first and last several lines of the source file are treated as header and tail. They will be stored in two separate files</li>
+ *     <li>There is an option to ignore the leading and trailing blank lines in the source file.</li>
+ *     <li>The user-defined line filter and line comparator is supported.</li>
+ * </ul>
+ * </p>
+ *
  * @author htyleo
  */
 public class ExternalSort {
 
     /**
-     * External sort
+     * Perform external sorting.
+     * The input is the source file and the output is a bunch of sorted files.
+     * Note that the file header and tail will each be stored in a separate file.
      *
      * @param sourceFile input file
      * @param dstDir output directory
      * @param config sorting configuration
      * @return sorting result
      * @throws IOException If an I/O error occurs
-     * @throws InterruptedException InterruptedException
-     * @throws ExecutionException ExecutionException
+     * @throws InterruptedException
+     * @throws ExecutionException
      */
     public static ExternalSortResult sort(final File sourceFile, final File dstDir,
                                           final ExternalSortConfig config) throws IOException,
