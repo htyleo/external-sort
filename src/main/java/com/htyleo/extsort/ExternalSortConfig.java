@@ -20,8 +20,8 @@ public class ExternalSortConfig {
     /** Buffer size, default is 8 KB */
     private int                bufferSize             = 8 * 1024;
 
-    /** Slice size, default is 8 MB */
-    private int                sliceSize              = 8 * 1024 * 1024;
+    /** Slice size, default is 2 MB */
+    private int                sliceSize              = 2 * 1024 * 1024;
 
     /** The first headerLines lines are regarded as the header, which will be extracted and written to a separate file */
     private int                headerLines            = 0;
