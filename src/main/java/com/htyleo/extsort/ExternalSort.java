@@ -28,11 +28,11 @@ import com.htyleo.extsort.util.IOUtil;
  * An implementation of external sorting.
  * The sorting is composed of two phases:
  * <ul>
- *     <li>Partition: partition the source file into a bunch of sorted files.</li>
- *     <li>Merge: merge the sorted files into a single file.</li>
+ *     <li>Partition: partition the input file into a bunch of smaller sorted files.</li>
+ *     <li>Merge: merge the sorted files into a single one, which is the output.</li>
  * </ul>
  *
- * The basic idea is that we logically partition the file into smaller slices, 
+ * The basic idea of this implementation is that we logically partition the file into smaller slices, 
  * each of which is sorted in memory and then written to a separate file.
  * Because sorting slices in memory is performed concurrently (i.e. each slice is sorted in a separate thread),
  * the maximum memory used = max size of thread pool * (slice size + buffer size).
@@ -41,8 +41,8 @@ import com.htyleo.extsort.util.IOUtil;
  * <p>
  * This implementation has the following features:
  * <ul>
- *     <li>Every line will be included in some slice in its entirely. In other words, a line will not be sliced in between. </li>
- *     <li>The first and last several lines of the source file are treated as header and tail. They will be stored in two separate files</li>
+ *     <li>Every line will be included in some slice in its entirely. In other words, a line will not be sliced in between.</li>
+ *     <li>The first and last several lines of the source file are treated as header and tail. They will be stored in two separate files.</li>
  *     <li>There is an option to ignore the leading and trailing blank lines in the source file.</li>
  *     <li>The user-defined line filter and line comparator is supported.</li>
  * </ul>
