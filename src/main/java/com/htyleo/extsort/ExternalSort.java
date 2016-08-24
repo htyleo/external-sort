@@ -24,7 +24,6 @@ import com.htyleo.extsort.common.SliceType;
 import com.htyleo.extsort.util.IOUtil;
 
 /**
- * <p>
  * An implementation of external sorting.
  * The sorting is composed of two phases:
  * <ul>
@@ -36,9 +35,7 @@ import com.htyleo.extsort.util.IOUtil;
  * each of which is sorted in memory and then written to a separate file.
  * Because sorting slices in memory is performed concurrently (i.e. each slice is sorted in a separate thread),
  * the maximum memory used = max size of thread pool * (slice size + buffer size).
- * </p>
  *
- * <p>
  * This implementation has the following features:
  * <ul>
  *     <li>Every line will be included in some slice in its entirely. In other words, a line will not be sliced in between.</li>
@@ -46,7 +43,6 @@ import com.htyleo.extsort.util.IOUtil;
  *     <li>There is an option to ignore the leading and trailing blank lines in the source file.</li>
  *     <li>The user-defined line filter and line comparator is supported.</li>
  * </ul>
- * </p>
  *
  * @author htyleo
  */

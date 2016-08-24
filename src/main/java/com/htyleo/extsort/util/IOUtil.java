@@ -25,7 +25,7 @@ public class IOUtil {
      *     <li>Before: "A(B)C\rHIJ" after: "ABC\r(H)IJ"</li>
      *     <li>Before: "A(B)C\r\nHIJ" after: "ABC\r\n(H)IJ"</li>
      *     <li>Before: "A(B)C[EOF]" after: "ABC([EOF])"</li>
-     * <ul/>
+     * </ul>
      *
      * @param raf After this operation, raf's pointer will be on the right of the next line separator or at EOF
      * @return true if we encounter a line separator, false otherwise (i.e. we meet EOF)
@@ -64,7 +64,7 @@ public class IOUtil {
      *     <li>before: "ABC(\n)HIJ" after: "ABC\n(H)IJ"</li>
      *     <li>before: "ABC(\n)\n\nHIJ" after: "ABC\n\n\n(H)IJ"</li>
      *     <li>before: "AB(C)\nHIJ" after: "AB(C)\nHIJ"</li>
-     * <ul/>
+     * </ul>
      *
      * @param raf If raf does not currently point to a line separator, its pointer is unchanged. Otherwise, after this operation, raf's pointer will be on the right of the last consecutive line separator or at EOF
      * @return true if we encounter blank lines, false otherwise (i.e. stay still, or we reached EOF)
@@ -98,7 +98,7 @@ public class IOUtil {
      *     <li>before: "ABC\rH(I)J" after: "AB(C)\rHIJ"</li>
      *     <li>before: "ABC\r\nH(I)J" after: "AB(C)\r\nHIJ"</li>
      *     <li>before: "AB(C)\n" after: 0</li>
-     * <ul/>
+     * </ul>
      *
      * @param raf After this operation, raf's pointer will be on the left of the previous line separator or at 0
      * @return true if we meet a line separator, false otherwise (i.e. we reached the beginning of the file)
@@ -138,7 +138,7 @@ public class IOUtil {
      *     <li>before: "ABC(\n)HIJ" after: "AB(C)\nHIJ"</li>
      *     <li>before: "ABC\n\n(\n)HIJ" after: "AB(C)\n\n\nHIJ"</li>
      *     <li>before: "ABC\n(H)IJ" after: "ABC\n(H)IJ"</li>
-     * <ul/>
+     * </ul>
      *
      * @param raf If raf does not currently point to a line separator, its pointer is unchanged. Otherwise, after this operation, raf's pointer will be on the left of the last consecutive line separator or at 0
      * @return true if we meet blank lines, false otherwise (i.e. stay still, or we reached the beginning of the file)
