@@ -1,8 +1,25 @@
 # external-sort
+
+[![Licence](https://img.shields.io/dub/l/vibe-d.svg)](LICENSE.txt)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.htyleo/external-sort/badge.svg)](http://search.maven.org/#search%7Cga%7C1%7Cexternal-sort)
+[![Docs](http://www.javadoc.io/badge/com.htyleo/external-sort.svg)](http://www.javadoc.io/doc/com.htyleo/external-sort/)
+[![Build Status](https://travis-ci.org/htyleo/external-sort.svg?branch=master)](https://travis-ci.org/htyleo/external-sort)
+
+
 This is a Java implementation of External Sorting using parallelism. External sorting is basically composed of two phases:
 
 * Partition: partition the input file into a bunch of smaller sorted files.
 * Merge: merge the sorted files into a single one, which is the output.
+
+Maven Dependency
+-----
+```xml
+<dependency>
+  <groupId>com.htyleo</groupId>
+  <artifactId>external-sort</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
 
 Code Example
 -----
@@ -13,6 +30,9 @@ File dstDir = new File("/dst");
 File dstFile = ExternalSort.sort(sourceFile, dstDir, config);
 ```
 
+API Documentation
+-----
+[http://www.javadoc.io/doc/com.htyleo/external-sort/](http://www.javadoc.io/doc/com.htyleo/external-sort/)
 
 Features
 -----
