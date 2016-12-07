@@ -1,8 +1,8 @@
 # external-sort
 
 [![Licence](https://img.shields.io/dub/l/vibe-d.svg)](LICENSE.txt)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.htyleo/external-sort/badge.svg)](http://search.maven.org/#search%7Cga%7C1%7Cexternal-sort)
-[![Docs](http://www.javadoc.io/badge/com.htyleo/external-sort.svg)](http://www.javadoc.io/doc/com.htyleo/external-sort/)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.htyleo.extsort/extsort/badge.svg)](http://search.maven.org/#search%7Cga%7C1%7Cextsort)
+[![Docs](http://www.javadoc.io/badge/com.htyleo.extsort/extsort.svg)](http://www.javadoc.io/doc/com.htyleo.extsort/extsort/)
 [![Build Status](https://travis-ci.org/htyleo/external-sort.svg?branch=master)](https://travis-ci.org/htyleo/external-sort)
 
 
@@ -15,8 +15,8 @@ Maven Dependency
 -----
 ```xml
 <dependency>
-  <groupId>com.htyleo</groupId>
-  <artifactId>external-sort</artifactId>
+  <groupId>com.htyleo.extsort</groupId>
+  <artifactId>extsort</artifactId>
   <version>1.0.0</version>
 </dependency>
 ```
@@ -32,7 +32,7 @@ File dstFile = ExternalSort.sort(sourceFile, dstDir, config);
 
 API Documentation
 -----
-[http://www.javadoc.io/doc/com.htyleo/external-sort/](http://www.javadoc.io/doc/com.htyleo/external-sort/)
+[http://www.javadoc.io/doc/com.htyleo.extsort/extsort/](http://www.javadoc.io/doc/com.htyleo.extsort/extsort/)
 
 Features
 -----
