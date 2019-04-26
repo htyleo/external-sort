@@ -37,7 +37,7 @@ API Documentation
 Features
 -----
 - We use multi-threading to speed up the partition phase.
-- During the partition phase, every line will be included in a certain partition in its entirety (i.e. no line will not be partitioned in between).
+- During the partition phase, every line will be included in a certain partition in its entirety (i.e. no line will be partitioned in between).
 - We treat the first and last several lines of the source file as header and tail, each of which will be written to a separate file. Consequently, after the partition phase, there will be a header file, a tail file and a bunch of (sorted) body files.
 - You can decide whether to ignore the leading and trailing blank lines in the source file.
 - We support user-defined line filter and comparator.
